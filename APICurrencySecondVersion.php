@@ -14,20 +14,20 @@ $response = file_get_contents($apiUrl);
 
 if ($response !== false) {
 
-    $currencyRates = json_decode($response, true);
+    $currencyRates = json_decode($response);
 
-    if (!isset($currencyRates[$fromCurrency])) {
+    if (!isset($currencyRates->$fromCurrency)) {
         echo "ERROR: Invalid base currency code entered.\n";
         exit;
     }
-    $validCurrencyCodes = array_keys($currencyRates[$fromCurrency]);
-    if (!in_array($toCurrency, $validCurrencyCodes)) {
+    $validCurrencyCodes = get_object_vars($currencyRates->$fromCurrency);
+    if (!array_key_exists($toCurrency, $validCurrencyCodes)) {
         echo "ERROR: Invalid target currency code entered.\n";
         exit;
     }
-    $toCurrencyRate = $currencyRates[$fromCurrency][$toCurrency];
+    $toCurrencyRate = $currencyRates->$fromCurrency->$toCurrency;
     $convertedAmount = $fromAmount * $toCurrencyRate;
-    echo "Converted amount:" . round($convertedAmount, 2) . $toCurrency . "\n";
+    echo "Converted amount:" . round($convertedAmount, 2) . " " . strtoupper($toCurrency) . "\n";
 } else {
     echo "Failed to get exchange rates data from API.\n";
 }
